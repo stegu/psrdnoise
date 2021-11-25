@@ -1,0 +1,37 @@
+body {
+  padding: 20px;
+  font-family: Georgia;	
+}
+.grid-container {
+  display: grid;
+  column-gap: 20px;
+}
+.canvas {
+  grid-column: 1 / span 1;
+  grid-row: 1 / span 1;
+}
+.code {
+  max-width: 600px;
+  grid-column: 2 / span 1;
+  grid-row: 1 / span 1;
+}
+h3 {
+ text-align: left;
+ font-size: 14pt;
+ font-family: sans-serif;
+ font-weight: bold;
+ margin-top: 6pt;
+ margin-bottom: 12pt;
+}
+a.navigation {
+ background-color: #ffffcc;
+ padding-top: 6px;
+ padding-bottom: 6px;
+ padding-left: 10px;
+ padding-right: 10px;
+ border: 1px solid #000000;
+ text-decoration: none;
+}
+a.navigation:hover {
+ background-color: #ffcc00;
+}

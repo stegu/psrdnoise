@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<title>2-D PSRDnoise tutorial 11</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<link type="text/css" rel="stylesheet" href="2d-psrdnoise-tutorial.css">
+
+<script type="text/javascript" src="2d-drawquad.js"></script>
+
+<script type="text/javascript" src="syntaxhighlighter_3.0.83/scripts/shCore.js"></script>
+<script type="text/javascript" src="syntaxhighlighter_3.0.83/scripts/shBrushGLSL.js"></script>
+<link type="text/css" rel="stylesheet" href="syntaxhighlighter_3.0.83/styles/shCoreEclipse.css"/>
+
+<script type="text/javascript">
+function showshader() {
+	codepane = document.getElementById("fragmentcode");
+	codepane.innerHTML = document.getElementById("shader-fs-visible").textContent;
+	SyntaxHighlighter.highlight(codepane);
+}
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 position;
+    attribute vec2 texcoord;
+
+    varying vec2 st;
+
+    void main(void) {
+        gl_Position = vec4(position, 1.0);
+        st = texcoord;
+    }
+</script>
+
+<script id="shader-fs-hidden" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+#endif
+
+#ifdef GL_OES_standard_derivatives
+#extension GL_OES_standard_derivatives : enable
+#endif
+
+
+// psrdnoise2.glsl
+// Copyright (c) 2021 Stefan Gustavson and Ian McEwan
+// (stefan.gustavson@liu.se, ijm567@gmail.com)
+// Published under the MIT license, see:
+// https://opensource.org/licenses/MIT
+
+vec3 permute(vec3 i) {
+  vec3 im = mod(i, 289.0);
+  return mod(((im*34.0)+10.0)*im, 289.0);
+}
+
+float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
+{
+  vec2 uv = vec2(x.x+x.y*0.5, x.y);
+  vec2 i0 = floor(uv); vec2 f0 = fract(uv);
+  float cmp = step(f0.y, f0.x);
+  vec2 o1 = vec2(cmp, 1.0-cmp);
+  vec2 i1 = i0 + o1; vec2 i2 = i0 + vec2(1.0, 1.0);
+  vec2 v0 = vec2(i0.x - i0.y*0.5, i0.y);
+  vec2 v1 = vec2(v0.x + o1.x - o1.y*0.5, v0.y + o1.y);
+  vec2 v2 = vec2(v0.x + 0.5, v0.y + 1.0);
+  vec2 x0 = x - v0; vec2 x1 = x - v1; vec2 x2 = x - v2;
+  vec3 iu, iv, xw, yw;
+  if(all(greaterThan(period, vec2(0.0)))) {
+    xw = mod(vec3(v0.x, v1.x, v2.x), period.x);
+    yw = mod(vec3(v0.y, v1.y, v2.y), period.y);
+    iu = floor(xw + 0.5*yw + 0.5); iv = floor(yw + 0.5);
+  } else {
+    iu = vec3(i0.x, i1.x, i2.x); iv = vec3(i0.y, i1.y, i2.y);
+  }
+  vec3 hash = permute(permute(iu) + iv);
+  vec3 psi = hash*(6.2831853/41.0) + alpha;
+  vec3 gx = cos(psi); vec3 gy = sin(psi);
+  vec2 g0 = vec2(gx.x, gy.x);
+  vec2 g1 = vec2(gx.y, gy.y);
+  vec2 g2 = vec2(gx.z, gy.z);
+  vec3 w = 0.8 - vec3(dot(x0, x0), dot(x1, x1), dot(x2, x2));
+  w = max(w, 0.0); vec3 w2 = w*w; vec3 w4 = w2*w2;
+  vec3 gdotx = vec3(dot(g0, x0), dot(g1, x1), dot(g2, x2));
+  float n = dot(w4, gdotx);
+  vec3 w3 = w2*w; vec3 dw = -8.0*w3*gdotx;
+  vec2 dn0 = w4.x*g0 + dw.x*x0;
+  vec2 dn1 = w4.y*g1 + dw.y*x1;
+  vec2 dn2 = w4.z*g2 + dw.z*x2;
+  gradient = 10.9*(dn0 + dn1 + dn2);
+  return 10.9*n;
+}
+
+float ptlined(vec2 p1, vec2 p2, vec2 p) {
+  vec2 p1p2 = p2 - p1;
+  vec2 v = normalize(p1p2);
+  vec2 s = p - p1;
+  float t = dot(v, s);
+  if (t<0.0) return length(s);
+  if (t>length(p1p2)) return length(p - p2);
+  return length(s - t*v);
+}
+
+
+float aastep(float threshold, float value) {
+  float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
+//  float afwidth = fwidth(value);  // fwidth(v) is |dFdx(v)| + |dFdy(v)|
+  return smoothstep(threshold-afwidth, threshold+afwidth, value);
+}
+
+float vectorfield(vec2 g, vec2 st, float vscale, float linewidth) {
+  vec2 pm = fract(st*vscale+0.5)-0.5; // coords [-0.5,0.5] rel. to arrow origin
+  float linedist = ptlined(-g*0.5, g*0.5, pm); // distance to arrow "body"
+  float line = 1.0 - aastep(linewidth*0.5, linedist);
+  // The arrowhead is an implicit triangle defined by three linear equations
+  float arrowsize = linewidth*0.7; // arrowhead size, eyeballed for nice look
+  vec2 a_vec = pm - g*0.5; // current coords relative to arrow tip
+  vec2 g_ = vec2(-g.y, g.x); // vector orthogonal to g
+  float arrow1 = dot(a_vec, -normalize(g)); // Distance to arrowhead base
+  float arrow2 = dot(a_vec, normalize( g + 1.5*g_ )); // to arrowhead right edge
+  float arrow3 = dot(a_vec, normalize( g - 1.5*g_ )); // to arrowhead left edge
+  float arrowd = max(max(arrow1, arrow2), arrow3); // if<arrowsize: inside triangle
+  float arrowhead = 1.0 - aastep(arrowsize, arrowd);
+  // Mask out cell borders where discontinuities cause errors in aastep
+  vec2 bordermask = step(-0.45,pm)-step(0.45,pm);
+  float mask = bordermask.x * bordermask.y;
+  return max(line, arrowhead)*mask;
+}
+
+</script>
+
+<script id="shader-fs-visible" type="x-shader/x-fragment">
+varying vec2 st;
+uniform float time;
+
+void main(void) {
+
+	const float nscale = 2.0;
+	vec2 v = nscale * (st-0.5);
+	const vec2 p = vec2(0.0, 0.0);
+	vec2 g;
+	float gscale = 20.0;
+	
+	float n = 0.5 + 0.5 * psrdnoise(v, p, 0.0, g);
+
+	vec2 vq = floor((st-0.5)*gscale+0.5)/gscale*nscale;
+	float nq = psrdnoise(vq, p, 0.0, g);
+	float vectors = vectorfield(g*0.12, st, gscale, 0.1);
+
+	vec3 noisecolor = vec3(n);
+	vec3 vectorcolor = vec3(1.0,1.0,0.0);
+	vec3 mixcolor = mix(noisecolor, vectorcolor, vectors);
+	gl_FragColor = vec4(mixcolor, 1.0);
+}
+</script>
+
+</head>
+
+<body onload="webGLStart(); showshader();">
+<h2>2-D PSRDnoise tutorial</h2>
+<h3>
+	<a class="navigation" href="2d-psrdnoise-tutorial-01.html">Page 1</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-02.html">2</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-03.html">3</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-04.html">4</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-05.html">5</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-06.html">6</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-07.html">7</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-08.html">8</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-09.html">9</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-10.html">10</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-11.html">11</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-12.html">12</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-13.html">13</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-14.html">14</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-15.html">15</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-16.html">16</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-17.html">17</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-18.html">18</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-19.html">19</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-20.html">20</a>&nbsp;
+	<a class="navigation" href="2d-psrdnoise-tutorial-21.html">21</a>
+</h3>
+ <div class="grid-container">
+  <div class="canvas">
+    <canvas id="psrdnoise-canvas" style="border: none;" width="500" height="500"></canvas>
+	<p>
+	<form onsubmit="return false;">Frame rate:
+	<input type="text" disabled id="fpscounter" size="4"/> FPS
+	</form>
+	</p>
+  </div>
+  <div class="code">
+    <h1>11: The gradient</h1>
+	<p>So much for the "alpha" parameter. Now for the final parameter, and the most fun and versatile of them all: the output parameter "g" that returns the gradient of the noise function.</p>
+	<p>Note that this is the <em>analytical</em> gradient. It is an exact derivative, to the limit of the working precision of the GPU, and it requires a lot less work to compute than performing several additional function calls and computing a finite difference approximation. (That "d" in the name "psrdnoise" is short for "with derivatives")</p>
+	<p>This visualisation shows the gradients at certain points as vectors overlaid on the noise pattern. The image doesn't really say a lot, but next we'll create an animated version that will make more sense. (Also, it was a fun challenge to make a fragment shader draw little arrows.) Note that, despite what this particular image might suggest, the gradient is computed at <em>every</em> point that is evaluated by the fragment shader, with only a small amount of extra work.</p>
+	<p>If you don't need the value of the gradient for anything, leaving the output parameter "g" unused in your shader will make the GLSL compiler eliminate the "dead code" for computing it, which speeds up the function by around 15%.</p>
+	<p>If you are curious, feel free to look at the function "vectorfield" in the source code. It's a bit more complicated than "gridpoints" and "gridlines", but it follows the same general principle of drawing anti-aliased implicit shapes by thresholding combinations of carefully chosen distance functions.</p>
+	<p>(And, if you didn't quite understand that last paragraph, don't worry. Drawing these little arrows is a totally different thing from using noise to make good looking patterns.)</p>
+	<pre class="brush: GLSL;" id="fragmentcode">
+	// Text in this pane will be dynamically replaced.
+	</pre>
+  </div>
+</div>
+</body>
+
+</html>
