@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>3-D PSRDnoise tutorial 01</title>
+    <title>3-D PSRDnoise tutorial 02</title>
     <meta charset="utf-8">
 	<link type="text/css" rel="stylesheet" href="3d-psrdnoise-tutorial.css">
 
@@ -37,10 +37,8 @@ function showshader() {
 		<div class="canvas" id="three-container">
 		</div>
 		<div class="code">
-		<h1>1: Introduction</h1>
-		<p>This is a tutorial on how to use the 3-d version of "psrdnoise", along with a few general pointers on procedural 3-D texture mapping. The presentation assumes that you have read the tutorial on 2-D psrdnoise. If you have not, please do.</p>
-		<p>We will use a sphere for all our examples, and we will use the Three.js framework for convenience, which means that the vertex shader will take some default attributes and uniforms from the ShaderMaterial framework of Three.js. Only our final example will actually show the fragmentshader, and we won't clutter the presentation with the code for the noise functions, but everything is in the source code for these pages if you want to have a look.</p>
-		<p>Use the mouse to rotate this sphere around. The texture is procedural, but it's defined as a 2-D surface map using 2-D texture coordinates. Mapping a 2-D texture onto a sphere with the traditional latitude-longitude mapping causes several problems: there is a texture seam along one longitude, the horizontal scale of the texture varies with latitude, and the texture "pinches" at the poles.</p>
+		<h1>2: Closing the seam</h1>
+		<p>The stretching at the equator can be fixed by making the texture "twice as wide" (scale the first texture coordinate by 2.0), and the seam where the first 2-D texture coordinate jumps from 1.0 to 0.0 can be removed by making the 2-D noise periodic with a matching repeat period. The uneven scaling with latitude and the ugly pinches at the poles remain, though.</p>
 		<pre class="brush: GLSL;" id = "fragmentcode">
 		// Fragment shader code goes here
 		</pre>
@@ -71,15 +69,15 @@ varying vec2 st;
 
 void main()
 {
-	vec2 v = 12.0*st;
-	vec2 p = vec2(0.0,0.0);
+	vec2 v = st*vec2(24.0, 12.0);
+	vec2 p = vec2(24.0,24.0);
 	float alpha = 2.0*time;
 	vec2 g;
 
 	float n = 0.5 + 0.5*psrdnoise(v, p, alpha, g);
-	vec3 noisecolor = vec3(n);
+	vec3 mixcolor = vec3(n);
 	
-    gl_FragColor = vec4(noisecolor, 1.0);
+    gl_FragColor = vec4(mixcolor, 1.0);
 }
 </script>
 
@@ -176,7 +174,7 @@ window.addEventListener( 'load', function() {
 				value: 0.0
 			}
 		},
-    vertexShader: document.getElementById('includes-vs-hidden').textContent
+   vertexShader: document.getElementById('includes-vs-hidden').textContent
       + "\r\n" + document.getElementById( 'vs-visible' ).textContent,
     fragmentShader: document.getElementById('includes-fs-hidden').textContent
 	  + "\r\n" + document.getElementById( 'fs-visible' ).textContent

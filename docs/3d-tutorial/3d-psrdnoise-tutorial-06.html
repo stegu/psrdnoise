@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <title>3-D PSRDnoise tutorial 06</title>
+    <meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="3d-psrdnoise-tutorial.css">
+
+<script type="text/javascript" src="syntaxhighlighter_3.0.83/scripts/shCore.js"></script>
+<script type="text/javascript" src="syntaxhighlighter_3.0.83/scripts/shBrushGLSL.js"></script>
+<link type="text/css" rel="stylesheet" href="syntaxhighlighter_3.0.83/styles/shCoreEclipse.css"/>
+
+</style>
+
+<script type="text/javascript">
+function showshader() {
+	codepane = document.getElementById("fragmentcode");
+	codepane.innerHTML = document.getElementById("fs-visible").textContent;
+	SyntaxHighlighter.highlight(codepane);
+}
+</script>
+
+</head>
+<body onload="showshader();">
+<h2>3-D PSRDnoise tutorial</h2>
+<h3>
+	<a class="navigation" href="3d-psrdnoise-tutorial-01.html">Page 1</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-02.html">2</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-03.html">3</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-04.html">4</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-05.html">5</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-06.html">6</a>
+	<a class="navigation" href="3d-psrdnoise-tutorial-07.html">7</a>
+</h3>
+    <div class="grid-container">
+		<div class="canvas" id="three-container">
+		</div>
+		<div class="code">
+		<h1>6: Bump mapping</h1>
+		<p>Procedural 3-D texture mapping is eminently suited for bump mapping. When using a 2-D texture, there is considerable hassle to work out the relation between its gradient in texture space and the surface normals in object space. With a 3-D texture, texture space <em>is</em> object space, so there is no need to transform between the two, and the computations become really simple. Using the analytical gradient from "psrdnoise", it becomes even easier.</p>
+		<p>The computations in the shader below are explained in a separate document: <a href="bumpmapping.pdf">"Bump mapping, procedural style" (PDF)</a>. Credit should be given to Morten Mikkelsen for pointing out the advantages in his dissertation in 2008.</p>
+		<p>Please note that we are "faking the lighting" in this shader by assuming that there is a simple directional light from the front upper right. In order to make the example as clear and simple as possible, we do not take into consideration any light sources defined in the Three.js scene.</p>
+		<pre class="brush: GLSL;" id = "fragmentcode">
+		// Fragment shader code goes here
+		</pre>
+		</div>
+	</div>
+</body>
+
+<script type="x-shader/x-vertex" id="vs-visible">
+uniform float time;
+
+varying vec3 uvw;
+varying vec2 st;
+varying vec3 N;
+
+void main()
+{
+	uvw = position;
+	st = uv;
+	N = normal; // Save transformation for after bump mapping
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+
+<script type="x-shader/x-fragment" id="fs-visible">
+uniform float time;
+uniform mat4 modelViewMatrix;
+
+varying vec3 uvw;
+varying vec3 N;
+
+void main()
+{
+	// A reasonable amplitude for features 1/8 unit wide
+	const float bumpamount = 0.02;
+
+    vec3 v = 8.0*vec3(uvw);
+	vec3 p = vec3(0.0);
+	vec3 g;
+	float bump;
+
+	bump = psrdnoise(v, p, 0.0, g);
+	g *= 8.0; // Scale with inner derivative (v is 8.0*uvw)
+
+	vec3 pattern = vec3(0.5+0.5*bump);
+	pattern.rb = 1.0-pattern.rb; // spruce it up
+	
+	// Perturb normal (Yes, this is all we need to do)
+	vec3 N_ = g - dot(g, N) * N; // N_ orthogonal to N
+	vec3 bumpedN = N - bumpamount * N_;
+	bumpedN = normalize(mat3(modelViewMatrix) * bumpedN);
+
+	// Roll our own lighting model ("For clarity". Meh.)
+	vec3 lightDirection = normalize(vec3(1.0,1.0,1.0));
+	vec3 specularcolor = vec3(1.0); // white
+    float lightA = 0.2;  // Ambient light
+	float phongD = max(0.0, dot(lightDirection, bumpedN));
+    float lightD = mix(phongD, 1.0, lightA);
+	float lightS = max(0.0, -normalize(
+		reflect(lightDirection, bumpedN)).z);
+	lightS = pow(lightS, 16.0);
+
+	vec3 color = lightD * pattern + lightS * specularcolor;
+
+    gl_FragColor = vec4(color, 1.0);
+}
+</script>
+
+<script type="x-shader" id="includes-vs-hidden">
+</script>
+
+<script type="x-shader" id="includes-fs-hidden">
+#ifdef GL_ES
+precision highp float;
+#endif
+
+#ifdef GL_OES_standard_derivatives
+#extension GL_OES_standard_derivatives : enable
+#endif
+
+// psrdnoise3.glsl
+// Copyright (c) 2021 Stefan Gustavson and Ian McEwan
+// (stefan.gustavson@liu.se, ijm567@gmail.com)
+// Published under the MIT license, see:
+// https://opensource.org/licenses/MIT
+
+vec4 permute(vec4 i) {
+  vec4 im = mod(i, 289.0);
+  return mod(((im*34.0)+10.0)*im, 289.0);
+}
+
+float psrdnoise(vec3 x, vec3 period, float alpha, out vec3 gradient)
+{
+  const mat3 M = mat3(0.0,1.0,1.0, 1.0,0.0,1.0, 1.0,1.0,0.0);
+  const mat3 Mi = mat3(-0.5,0.5,0.5, 0.5,-0.5,0.5, 0.5,0.5,-0.5);
+  vec3 uvw = M*x;
+  vec3 i0 = floor(uvw); vec3 f0 = fract(uvw);
+  vec3 g_ = step(f0.xyx, f0.yzz); vec3 l_ = 1.0 - g_;
+  vec3 g = vec3(l_.z, g_.xy); vec3 l = vec3(l_.xy, g_.z);
+  vec3 o1 = min(g, l); vec3 o2 = max(g, l);
+  vec3 i1 = i0 + o1;  vec3 i2 = i0 + o2; vec3 i3 = i0 + vec3(1.0);
+  vec3 v0, v1, v2, v3;
+  v0 = Mi*i0; v1 = Mi*i1; v2 = Mi*i2; v3 = Mi*i3;
+  vec3 x0 = x-v0; vec3 x1 = x-v1; vec3 x2 = x-v2; vec3 x3 = x-v3;
+  if(all(greaterThan(period, vec3(0.0)))) {
+    i0 = M*mod(v0, period); i0 = floor(i0 + 0.5); 
+    i1 = M*mod(v1, period); i1 = floor(i1 + 0.5);
+    i2 = M*mod(v2, period); i2 = floor(i2 + 0.5);
+    i3 = M*mod(v3, period); i3 = floor(i3 + 0.5);    
+  }
+  vec4 hash = permute( permute( permute( 
+              vec4(i0.z, i1.z, i2.z, i3.z ))
+            + vec4(i0.y, i1.y, i2.y, i3.y ))
+            + vec4(i0.x, i1.x, i2.x, i3.x ));
+  vec4 theta = hash*3.883222077;
+  vec4 sz = 0.996539792 - 0.006920415*hash;
+  vec4 psi = hash*0.108705628;
+  vec4 Ct = cos(theta); vec4 St = sin(theta);
+  vec4 sz_prime = sqrt(1.0 - sz*sz);
+  vec4 gx, gy, gz;
+  if(alpha != 0.0) {
+    vec4 px = Ct*sz_prime; vec4 py=St*sz_prime;
+	vec4 pz = sz;
+    vec4 Sp = sin(psi); vec4 Cp = cos(psi);
+    vec4 Ctp = St*Sp - Ct*Cp;
+    vec4 qx = mix( Ctp*St, Sp, sz);
+    vec4 qy = mix(-Ctp*Ct, Cp, sz);
+    vec4 qz = -(py*Cp + px*Sp);
+    vec4 Sa = vec4(sin(alpha)); vec4 Ca = vec4(cos(alpha));
+    gx = Ca*px + Sa*qx; gy = Ca*py + Sa*qy; gz = Ca*pz + Sa*qz;
+  } else {
+    gx = Ct * sz_prime; gy = St * sz_prime; gz = sz;  
+  }
+  vec3 g0 = vec3(gx.x,gy.x,gz.x); vec3 g1 = vec3(gx.y,gy.y,gz.y);
+  vec3 g2 = vec3(gx.z,gy.z,gz.z); vec3 g3 = vec3(gx.w,gy.w,gz.w);
+  vec4 w = 0.5-vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3));
+  w = max(w, 0.0);
+  vec4 w2 = w*w; vec4 w3 = w2*w;
+  vec4 gdotx = vec4(dot(g0,x0), dot(g1,x1), dot(g2,x2), dot(g3,x3));
+  float n = dot(w3, gdotx);
+  vec4 dw = -6.0*w2*gdotx;
+  vec3 dn0 = w3.x*g0 + dw.x*x0; vec3 dn1 = w3.y*g1 + dw.y*x1;
+  vec3 dn2 = w3.z*g2 + dw.z*x2; vec3 dn3 = w3.w*g3 + dw.w*x3;
+  gradient = 39.5 * (dn0 + dn1 + dn2 + dn3);
+  return 39.5*n;
+}
+
+</script>
+
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+	
+<script type="text/javascript" id="mainCode">
+var
+    container,
+    renderer,
+    scene,
+    camera,
+    mesh,
+    start = Date.now(),
+    fov = 45;
+
+window.addEventListener( 'load', function() {
+    container = document.getElementById( "three-container" );
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(
+        fov,
+        1.0,
+        0.1,
+        100 );
+    camera.position.z = 3.0;
+    material = new THREE.ShaderMaterial( {
+		uniforms: {
+			time: {
+				type: "f",
+				value: 0.0
+			}
+		},
+    vertexShader: document.getElementById('includes-vs-hidden').textContent
+      + "\r\n" + document.getElementById( 'vs-visible' ).textContent,
+    fragmentShader: document.getElementById('includes-fs-hidden').textContent
+	  + "\r\n" + document.getElementById( 'fs-visible' ).textContent
+	} );
+
+	mesh = new THREE.Mesh(new THREE.SphereGeometry( 1.0, 100, 100 ), material);
+	scene.add( mesh );
+
+	renderer = new THREE.WebGLRenderer();
+	renderer.setSize( 500, 500 );
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.getContext().getExtension("OES_standard_derivatives");
+
+	const orbit = new THREE.OrbitControls( camera, renderer.domElement );
+	container.appendChild( renderer.domElement );
+
+	onWindowResize();
+	window.addEventListener( 'resize', onWindowResize );
+
+	render();
+} );
+
+function onWindowResize () {
+	renderer.setSize( 500, 500 );
+	camera.aspect = 1.0;
+	camera.updateProjectionMatrix();
+}
+
+function render() {
+    material.uniforms[ 'time' ].value = .001 * ( Date.now() - start );
+    renderer.render( scene, camera );
+    requestAnimationFrame( render );
+}
+
+</script>
+
+</html>
