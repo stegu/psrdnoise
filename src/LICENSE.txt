@@ -29,12 +29,13 @@ Now, that legalese is a lot to include for a small snippet of GLSL code,
 particularly if you are trying to save on space for a demo. In addition
 to the formal MIT license, we are hereby granting you permission also
 under a simplified version of the terms. The conditions are the same,
-but you are allowed to only include the following brief header with the
+but you are allowed to instead include the following brief header with the
 function, referencing the MIT license by name only and pointing to this
 repository. You may remove any other comments from the code and edit it
 for compactness as you see fit, but please keep this minimal amount of
-information. There are already "bare bones" versions of a few source
-files in the repository which are formatted like this.
+credit and information on where to find the original code. There are
+already some "bare bones" source files in the repository with this header.
 
-// "psrdnoise" is Copyright 2021 Stefan Gustavson and Ian McEwan
-// MIT licensed, see https://github.com/stegu/psrdnoise
+// psrdnoise (c) 2021 Stefan Gustavson and Ian McEwan
+// Published under the MIT license.
+// https://github.com/stegu/psrdnoise/
