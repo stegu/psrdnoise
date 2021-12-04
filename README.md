@@ -1,17 +1,19 @@
 # psrdnoise
 Tiling simplex flow noise in 2-D and 3-D compatible with GLSL 1.20 (WebGL 1.0) and above.
 
-Coming soon! The scientific article is accepted and will appear in the
+The scientific article on this is accepted and will appear in the
 Journal of Computer Graphics Techniques, [JCGT](https://jcgt.org).
-Code will appear here, and there will be plenty of live WebGL examples on
+Code is in the src/ folder, and there will be plenty of live WebGL examples on
 [the accompanying Github Pages site](https://stegu.github.io/psrdnoise).
 
 LICENSE
 
-The entire content of the docs/ folder, except for GLSL shader code
-that comes with an MIT license, is in the public domain.
+The entire content of the docs/ folder is in the public domain, with the
+exception of GLSL shader code that comes with an MIT license as specified
+in the code comments.
 
-All GLSL code in this repository is published under the permissive [MIT license](https://opensource.org/licenses/MIT):
+All GLSL code in this repository is published under the permissive
+[MIT license](https://opensource.org/licenses/MIT):
 
 Copyright 2021 Stefan Gustavson and Ian McEwan
 
