@@ -3,7 +3,8 @@ Tiling simplex flow noise in 2-D and 3-D compatible with GLSL 1.20 (WebGL 1.0) a
 
 The scientific article on this is accepted and will appear in the
 Journal of Computer Graphics Techniques, [JCGT](https://jcgt.org).
-Code is in the src/ folder, and there will be plenty of live WebGL examples on
+Code is in the src/ folder, and there are some live WebGL examples and
+a tutorial on how to use these functions on
 [the accompanying Github Pages site](https://stegu.github.io/psrdnoise).
 
 LICENSE
