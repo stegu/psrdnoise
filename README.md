@@ -7,7 +7,7 @@ Code is in the src/ folder, and there are some live WebGL examples and
 a tutorial on how to use these functions on
 [the accompanying Github Pages site](https://stegu.github.io/psrdnoise).
 
-LICENSE
+## LICENSE
 
 The entire content of the docs/ folder is in the public domain, with the
 exception of GLSL shader code that comes with an MIT license as specified
