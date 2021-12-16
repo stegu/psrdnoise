@@ -1,6 +1,4 @@
-The code in this folder is released under the terms of the MIT license:
-
----- (start formal license text)
+## The code in this folder is released under the terms of the MIT license:
 
 Copyright 2021, Stefan Gustavson and Ian MacEwan
 (stefan.gustavson@gmail.com, ijm567@gmail.com)
@@ -23,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
----- (end formal license text)
+## Brief license
 
 Now, that legalese is a lot to include for a small snippet of GLSL code,
 particularly if you are trying to save on space for a demo. In addition
@@ -33,8 +31,9 @@ but you are allowed to instead include the following brief header with the
 function, referencing the MIT license by name only and pointing to this
 repository. You may remove any other comments from the code and edit it
 for compactness as you see fit, but please keep this minimal amount of
-credit and information on where to find the original code. There are
-already some "bare bones" source files in the repository with this header.
+credit and information on where to find the original code. Source files
+in the repository with "-min" in the file name have this short header,
+have a compacted code style and are stripped of all comments.
 
 // psrdnoise (c) 2021 Stefan Gustavson and Ian McEwan
 // Published under the MIT license.
