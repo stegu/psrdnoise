@@ -35,6 +35,8 @@ credit and information on where to find the original code. Source files
 in the repository with "-min" in the file name have this short header,
 have a compacted code style and are stripped of all comments.
 
+```
 // psrdnoise (c) 2021 Stefan Gustavson and Ian McEwan
 // Published under the MIT license.
 // https://github.com/stegu/psrdnoise/
+```
