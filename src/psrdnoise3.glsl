@@ -83,11 +83,8 @@ vec4 permute(vec4 x) {
 // FASTROTATION if you are not actually going to use the rotation.)
 //
 // Setting any period to 0.0 or a negative value will skip the periodic
-// wrap and make the function execute 10-15% faster. For periodicity
-// along some dimensions but not others, set the period to 289.0 (288.0
-// if using the "Perlin" grid orientation) rather than 0.0 for the
-// dimensions where you don't want any specific periodicity. In this
-// case, there is no speedup.
+// wrap for that dimension. Setting all periods to 0.0 makes the function
+// execute 10-15% faster.
 //
 // Not using the return value for the gradient will make the compiler
 // eliminate the code for computing it. This speeds up the function by

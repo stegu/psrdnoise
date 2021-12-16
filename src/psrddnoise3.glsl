@@ -3,7 +3,7 @@
 //
 // Authors: Stefan Gustavson (stefan.gustavson@gmail.com)
 // and Ian McEwan (ijm567@gmail.com)
-// Version 2021-11-04, published under the MIT license (see below)
+// Version 2021-12-02, published under the MIT license (see below)
 //
 // Copyright (c) 2021 Stefan Gustavson and Ian McEwan.
 //
@@ -84,12 +84,9 @@ vec4 permute(vec4 i) {
 // (This speedup will not happen if FASTROTATION is enabled. Do not specify
 // FASTROTATION if you are not actually going to use the rotation.)
 //
-// Setting any period to 0.0 or a negative value will skip the wrapping
-// and make the function execute about 10% faster. If you want periodicity
-// for some dimensions but not others, set the period to 289.0 (288.0
-// if using the "Perlin" grid orientation) rather than 0.0 for the
-// dimensions where you don't want any specific periodicity. In that
-// case, there is no speedup.
+// Setting any period to 0.0 or a negative value will skip the periodic
+// wrap for that dimension. Setting all periods to 0.0 makes the function
+// execute about 10% faster.
 //
 // Not using the return values for the first or second order derivatives
 // will make the compiler eliminate the code for computing that value.
@@ -165,25 +162,33 @@ float psrddnoise(vec3 x, vec3 period, float alpha, out vec3 gradient,
   vec3 x2 = x - v2;
   vec3 x3 = x - v3;
 
-  if(all(greaterThan(period, vec3(0.0)))) {
+  if(any(greaterThan(period, vec3(0.0)))) {
     // Wrap to periods and transform back to simplex space
+    vec4 vx = vec4(v0.x, v1.x, v2.x, v3.x);
+    vec4 vy = vec4(v0.y, v1.y, v2.y, v3.y);
+    vec4 vz = vec4(v0.z, v1.z, v2.z, v3.z);
+	// Wrap to periods where specified
+	if(period.x > 0.0) vx = mod(vx, period.x);
+	if(period.y > 0.0) vy = mod(vy, period.y);
+	if(period.z > 0.0) vz = mod(vz, period.z);
+    // Transform back
 #ifndef PERLINGRID
-    i0 = M * mod(v0, period);
-    i1 = M * mod(v1, period);
-    i2 = M * mod(v2, period);
-    i3 = M * mod(v3, period);
+    i0 = M * vec3(vx.x, vy.x, vz.x);
+    i1 = M * vec3(vx.y, vy.y, vz.y);
+    i2 = M * vec3(vx.z, vy.z, vz.z);
+    i3 = M * vec3(vx.w, vy.w, vz.w);
 #else
-    v0 = mod(v0, period);
-    v1 = mod(v1, period);
-    v2 = mod(v2, period);
-    v3 = mod(v3, period);
+    v0 = vec3(vx.x, vy.x, vz.x);
+    v1 = vec3(vx.y, vy.y, vz.y);
+    v2 = vec3(vx.z, vy.z, vz.z);
+    v3 = vec3(vx.w, vy.w, vz.w);
     // Transform wrapped coordinates back to uvw
     i0 = v0 + dot(v0, vec3(1.0/3.0));
     i1 = v1 + dot(v1, vec3(1.0/3.0));
     i2 = v2 + dot(v2, vec3(1.0/3.0));
     i3 = v3 + dot(v3, vec3(1.0/3.0));
 #endif
-    // Fix any rounding errors in the transformations
+	// Fix rounding errors
     i0 = floor(i0 + 0.5);
     i1 = floor(i1 + 0.5);
     i2 = floor(i2 + 0.5);
