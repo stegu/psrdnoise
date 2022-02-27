@@ -1,6 +1,10 @@
 # psrdnoise
 Tiling simplex flow noise in 2-D and 3-D compatible with GLSL 1.20 (WebGL 1.0) and above.
 
+A WGSL port is underway. The versions without analytic derivatives are ported and seem
+to be working (yield the same results as the corresponding GLSL functions), but I have
+only done a minimal amount of testing.
+
 A scientific article on this is published in Journal of Computer Graphics
 Techniques, [JCGT](http://jcgt.org/published/0011/01/02/).
 Code is in the src/ folder, and there are some live WebGL examples and
