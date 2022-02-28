@@ -3,7 +3,7 @@
 //
 // Authors: Stefan Gustavson (stefan.gustavson@gmail.com)
 // and Ian McEwan (ijm567@gmail.com)
-// Version 2022-02-27, published under the MIT license (see below)
+// Version 2022-02-28, published under the MIT license (see below)
 //
 // Copyright (c) 2021-2022 Stefan Gustavson and Ian McEwan.
 //
