@@ -87,7 +87,7 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -101,7 +101,7 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 	var vy: vec4<f32>;
 	var vz: vec4<f32>;
 
-	if(any(p > vec3(0.0))) {
+	if(any(p > vec3<f32>(0.0))) {
 		vx = vec4<f32>(v0.x, v1.x, v2.x, v3.x);
 		vy = vec4<f32>(v0.y, v1.y, v2.y, v3.y);
 		vz = vec4<f32>(v0.z, v1.z, v2.z, v3.z);
