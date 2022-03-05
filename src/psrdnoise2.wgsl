@@ -44,7 +44,7 @@
 struct NG2 {
 	noise: f32;
 	gradient: vec2<f32>;
-}
+};
 
 // Say hello to our old friend, the "mod289" function!
 // WGSL has no mod(), and "%" is "remainder", not proper modulo.
@@ -90,10 +90,10 @@ fn psrnoise2(x: vec2<f32>, p: vec2<f32>, alpha: f32) -> f32
 		xw = vec3<f32>(v0.x, v1.x, v2.x);
 		yw = vec3<f32>(v0.y, v1.y, v2.y);
 		if(p.x > 0.0) {
-			xw = xw - floor(vec3(v0.x, v1.x, v2.x) / p.x) * p.x;
+			xw = xw - floor(vec3<f32>(v0.x, v1.x, v2.x) / p.x) * p.x;
 		}
 		if(p.y > 0.0) {
-			yw = yw - floor(vec3(v0.y, v1.y, v2.y) / p.y) * p.y;
+			yw = yw - floor(vec3<f32>(v0.y, v1.y, v2.y) / p.y) * p.y;
 		}
 	iu = floor(xw + 0.5*yw + 0.5);
 	iv = floor(yw + 0.5);
@@ -256,10 +256,10 @@ fn psrdnoise2(x: vec2<f32>, p: vec2<f32>, alpha: f32) -> NG2
 		xw = vec3<f32>(v0.x, v1.x, v2.x);
 		yw = vec3<f32>(v0.y, v1.y, v2.y);
 		if(p.x > 0.0) {
-			xw = xw - floor(vec3(v0.x, v1.x, v2.x) / p.x) * p.x;
+			xw = xw - floor(vec3<f32>(v0.x, v1.x, v2.x) / p.x) * p.x;
 		}
 		if(p.y > 0.0) {
-			yw = yw - floor(vec3(v0.y, v1.y, v2.y) / p.y) * p.y;
+			yw = yw - floor(vec3<f32>(v0.y, v1.y, v2.y) / p.y) * p.y;
 		}
 	iu = floor(xw + 0.5*yw + 0.5);
 	iv = floor(yw + 0.5);
