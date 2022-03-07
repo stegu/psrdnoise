@@ -87,7 +87,7 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -101,7 +101,7 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 	var vy: vec4<f32>;
 	var vz: vec4<f32>;
 
-	if(any(p > vec3(0.0))) {
+	if(any(p > vec3<f32>(0.0))) {
 		vx = vec4<f32>(v0.x, v1.x, v2.x, v3.x);
 		vy = vec4<f32>(v0.y, v1.y, v2.y, v3.y);
 		vz = vec4<f32>(v0.z, v1.z, v2.z, v3.z);
@@ -114,10 +114,10 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 		if(p.z > 0.0) {
 			vz = vz - floor(vz / p.z) * p.z;
 		}
-		i0 = floor(M * vec3(vx.x, vy.x, vz.x) + 0.5);
-		i1 = floor(M * vec3(vx.y, vy.y, vz.y) + 0.5);
-		i2 = floor(M * vec3(vx.z, vy.z, vz.z) + 0.5);
-		i3 = floor(M * vec3(vx.w, vy.w, vz.w) + 0.5);
+		i0 = floor(M * vec3<f32>(vx.x, vy.x, vz.x) + 0.5);
+		i1 = floor(M * vec3<f32>(vx.y, vy.y, vz.y) + 0.5);
+		i2 = floor(M * vec3<f32>(vx.z, vy.z, vz.z) + 0.5);
+		i3 = floor(M * vec3<f32>(vx.w, vy.w, vz.w) + 0.5);
 	}
 	
 	var hash: vec4<f32>;
@@ -165,8 +165,8 @@ fn psrnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> f32
 		qx = mix( Ctp*St, Sp, sz);
 		qy = mix(-Ctp*Ct, Cp, sz);
 		qz = -(py*Cp + px*Sp);
-		Sa = vec4(sin(alpha));
-		Ca = vec4(cos(alpha));
+		Sa = vec4<f32>(sin(alpha));
+		Ca = vec4<f32>(cos(alpha));
 		gx = Ca*px + Sa*qx;
 		gy = Ca*py + Sa*qy;
 		gz = Ca*pz + Sa*qz;
@@ -239,7 +239,7 @@ fn psnoise3(x: vec3<f32>, p: vec3<f32>) -> f32
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -253,7 +253,7 @@ fn psnoise3(x: vec3<f32>, p: vec3<f32>) -> f32
 	var vy: vec4<f32>;
 	var vz: vec4<f32>;
 
-	if(any(p > vec3(0.0))) {
+	if(any(p > vec3<f32>(0.0))) {
 		vx = vec4<f32>(v0.x, v1.x, v2.x, v3.x);
 		vy = vec4<f32>(v0.y, v1.y, v2.y, v3.y);
 		vz = vec4<f32>(v0.z, v1.z, v2.z, v3.z);
@@ -266,10 +266,10 @@ fn psnoise3(x: vec3<f32>, p: vec3<f32>) -> f32
 		if(p.z > 0.0) {
 			vz = vz - floor(vz / p.z) * p.z;
 		}
-		i0 = floor(M * vec3(vx.x, vy.x, vz.x) + 0.5);
-		i1 = floor(M * vec3(vx.y, vy.y, vz.y) + 0.5);
-		i2 = floor(M * vec3(vx.z, vy.z, vz.z) + 0.5);
-		i3 = floor(M * vec3(vx.w, vy.w, vz.w) + 0.5);
+		i0 = floor(M * vec3<f32>(vx.x, vy.x, vz.x) + 0.5);
+		i1 = floor(M * vec3<f32>(vx.y, vy.y, vz.y) + 0.5);
+		i2 = floor(M * vec3<f32>(vx.z, vy.z, vz.z) + 0.5);
+		i3 = floor(M * vec3<f32>(vx.w, vy.w, vz.w) + 0.5);
 	}
 	
 	var hash: vec4<f32>;
@@ -360,7 +360,7 @@ fn srnoise3(x: vec3<f32>, alpha: f32) -> f32
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -415,8 +415,8 @@ fn srnoise3(x: vec3<f32>, alpha: f32) -> f32
 		qx = mix( Ctp*St, Sp, sz);
 		qy = mix(-Ctp*Ct, Cp, sz);
 		qz = -(py*Cp + px*Sp);
-		Sa = vec4(sin(alpha));
-		Ca = vec4(cos(alpha));
+		Sa = vec4<f32>(sin(alpha));
+		Ca = vec4<f32>(cos(alpha));
 		gx = Ca*px + Sa*qx;
 		gy = Ca*py + Sa*qy;
 		gz = Ca*pz + Sa*qz;
@@ -489,7 +489,7 @@ fn snoise3(x: vec3<f32>) -> f32
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -555,7 +555,7 @@ fn snoise3(x: vec3<f32>) -> f32
 struct NG3 {
 	noise: f32;
 	gradient: vec3<f32>;
-}
+};
 
 fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 {
@@ -594,7 +594,7 @@ fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -608,7 +608,7 @@ fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 	var vy: vec4<f32>;
 	var vz: vec4<f32>;
 
-	if(any(p > vec3(0.0))) {
+	if(any(p > vec3<f32>(0.0))) {
 		vx = vec4<f32>(v0.x, v1.x, v2.x, v3.x);
 		vy = vec4<f32>(v0.y, v1.y, v2.y, v3.y);
 		vz = vec4<f32>(v0.z, v1.z, v2.z, v3.z);
@@ -621,10 +621,10 @@ fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 		if(p.z > 0.0) {
 			vz = vz - floor(vz / p.z) * p.z;
 		}
-		i0 = floor(M * vec3(vx.x, vy.x, vz.x) + 0.5);
-		i1 = floor(M * vec3(vx.y, vy.y, vz.y) + 0.5);
-		i2 = floor(M * vec3(vx.z, vy.z, vz.z) + 0.5);
-		i3 = floor(M * vec3(vx.w, vy.w, vz.w) + 0.5);
+		i0 = floor(M * vec3<f32>(vx.x, vy.x, vz.x) + 0.5);
+		i1 = floor(M * vec3<f32>(vx.y, vy.y, vz.y) + 0.5);
+		i2 = floor(M * vec3<f32>(vx.z, vy.z, vz.z) + 0.5);
+		i3 = floor(M * vec3<f32>(vx.w, vy.w, vz.w) + 0.5);
 	}
 	
 	var hash: vec4<f32>;
@@ -672,8 +672,8 @@ fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 		qx = mix( Ctp*St, Sp, sz);
 		qy = mix(-Ctp*Ct, Cp, sz);
 		qz = -(py*Cp + px*Sp);
-		Sa = vec4(sin(alpha));
-		Ca = vec4(cos(alpha));
+		Sa = vec4<f32>(sin(alpha));
+		Ca = vec4<f32>(cos(alpha));
 		gx = Ca*px + Sa*qx;
 		gy = Ca*py + Sa*qy;
 		gz = Ca*pz + Sa*qz;
@@ -753,7 +753,7 @@ fn psdnoise3(x: vec3<f32>, p: vec3<f32>) -> NG3
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -767,7 +767,7 @@ fn psdnoise3(x: vec3<f32>, p: vec3<f32>) -> NG3
 	var vy: vec4<f32>;
 	var vz: vec4<f32>;
 
-	if(any(p > vec3(0.0))) {
+	if(any(p > vec3<f32>(0.0))) {
 		vx = vec4<f32>(v0.x, v1.x, v2.x, v3.x);
 		vy = vec4<f32>(v0.y, v1.y, v2.y, v3.y);
 		vz = vec4<f32>(v0.z, v1.z, v2.z, v3.z);
@@ -780,10 +780,10 @@ fn psdnoise3(x: vec3<f32>, p: vec3<f32>) -> NG3
 		if(p.z > 0.0) {
 			vz = vz - floor(vz / p.z) * p.z;
 		}
-		i0 = floor(M * vec3(vx.x, vy.x, vz.x) + 0.5);
-		i1 = floor(M * vec3(vx.y, vy.y, vz.y) + 0.5);
-		i2 = floor(M * vec3(vx.z, vy.z, vz.z) + 0.5);
-		i3 = floor(M * vec3(vx.w, vy.w, vz.w) + 0.5);
+		i0 = floor(M * vec3<f32>(vx.x, vy.x, vz.x) + 0.5);
+		i1 = floor(M * vec3<f32>(vx.y, vy.y, vz.y) + 0.5);
+		i2 = floor(M * vec3<f32>(vx.z, vy.z, vz.z) + 0.5);
+		i3 = floor(M * vec3<f32>(vx.w, vy.w, vz.w) + 0.5);
 	}
 	
 	var hash: vec4<f32>;
@@ -881,7 +881,7 @@ fn srdnoise3(x: vec3<f32>, alpha: f32) -> NG3
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
@@ -936,8 +936,8 @@ fn srdnoise3(x: vec3<f32>, alpha: f32) -> NG3
 		qx = mix( Ctp*St, Sp, sz);
 		qy = mix(-Ctp*Ct, Cp, sz);
 		qz = -(py*Cp + px*Sp);
-		Sa = vec4(sin(alpha));
-		Ca = vec4(cos(alpha));
+		Sa = vec4<f32>(sin(alpha));
+		Ca = vec4<f32>(cos(alpha));
 		gx = Ca*px + Sa*qx;
 		gy = Ca*py + Sa*qy;
 		gz = Ca*pz + Sa*qz;
@@ -1017,7 +1017,7 @@ fn sdnoise3(x: vec3<f32>) -> NG3
 	o2 = max( gt, lt );
 	i1 = i0 + o1;
 	i2 = i0 + o2;
-	i3 = i0 + vec3(1.0,1.0,1.0);
+	i3 = i0 + vec3<f32>(1.0,1.0,1.0);
 	v0 = Mi * i0;
 	v1 = Mi * i1;
 	v2 = Mi * i2;
