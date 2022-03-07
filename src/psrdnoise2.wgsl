@@ -38,7 +38,7 @@
 //	psdnoise2(x: vec2<f32>, p: vec2<f32>) -> NG2
 //	srdnoise2(x: vec2<f32>, alpha: f32) -> NG2
 //	sdnoise2(x: vec2<f32>) -> NG2
-// NG2 is a struct with fields .noise: f32 and .gradient: vec2<f32>
+// The struct NG2 is declared below.
 
 // Struct to return noise and its analytic gradient
 struct NG2 {
