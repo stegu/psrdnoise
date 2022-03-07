@@ -38,7 +38,13 @@
 //	psdnoise3(x: vec3<f32>, p: vec3<f32>) -> NG3
 //	srdnoise3(x: vec3<f32>, alpha: f32) -> NG3
 //	sdnoise3(x: vec3<f32>) -> NG3
-// NG3 is a struct type with fields .noise: f32 and .gradient: vec3<f32>
+// The struct type NG3 is declared below.
+
+// Struct for returning noise and its analytic gradient
+struct NG3 {
+	noise: f32;
+	gradient: vec3<f32>;
+};
 
 fn mod289v4f(i: vec4<f32>) -> vec4<f32> {
 	return i - floor(i / 289.0) * 289.0;
@@ -550,12 +556,7 @@ fn snoise3(x: vec3<f32>) -> f32
 	return 39.5 * n;
 }
 
-// For these versions, the noise and its
-// analytic gradient are returned in a struct
-struct NG3 {
-	noise: f32;
-	gradient: vec3<f32>;
-};
+// Versions computing their gradient and returning a struct
 
 fn psrdnoise3(x: vec3<f32>, p: vec3<f32>, alpha: f32) -> NG3
 {
