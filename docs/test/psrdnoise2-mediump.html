@@ -98,8 +98,11 @@ void main(void) {
 <body onload="webGLStart();" style="max-width:600px;">
     <h1>2-D psrdnoise in mediump</h1>
 	<p width="600">A testbed for mediump-compatible psrdnoise. The noise
-  function used here is still not mediump compatible, but it's going
-  to be. Hopefully.</p>
+  function used here is mediump compatible, but mediump has its inherent flaws:
+  the texture coordinates have reduced precision, and uniforms are also less
+  precise. Specifically, the "time" parameter sen to the shader starts to
+  take too large steps after a while. Plenty of things to watch out for here
+  that are not an issue in 32-bit mode. But hey, it works! (I think.)</p>
   <canvas id="Noisedemo-canvas" style="border: none;" width="600" height="600"></canvas>
 	<p>
 	<form onsubmit="return false;">Frame rate:
