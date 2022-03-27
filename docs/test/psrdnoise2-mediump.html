@@ -47,6 +47,7 @@ float mpsrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
 	hashtemp = mod(hashtemp*iu_m49 + iv_m49, 49.0);
 	vec3 hash = mod(14.0*hashtemp + 2.0, 49.0);
 	hash = mod(hash*hashtemp, 49.0);
+	
 	vec3 psi = hash*0.07482 + alpha;
 	vec3 gx = cos(psi); vec3 gy = sin(psi);
 	vec2 g0 = vec2(gx.x, gy.x);
