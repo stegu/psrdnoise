@@ -64,9 +64,9 @@ uniform float time;
 
 void main(void) {
 
-	vec2 p = vec2(6.0, 6.0);
+	vec2 p = vec2(24.0, 24.0);
 	vec2 g;
-	vec2 v = st*12.0;
+	vec2 v = st*24.0 - 12.0;
 	float n = 0.5 + 0.5*psrdnoise(v, p, time, g);
     gl_FragColor = vec4(n, n, n, 1.0);
 }
