@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>WebGL lowp/mediump/highp details</title>
+</head>
+<body>
+</body>
+<!-- <script src="resources/webgl-utils.js"></script> -->
+<script>
+function main() {
+  // Get A WebGL context
+  /** @type {HTMLCanvasElement} */
+  const canvas = document.createElement("canvas");
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    return;
+  }
+
+  const shaderTypes = [
+    'VERTEX_SHADER',
+    'FRAGMENT_SHADER',
+  ];
+  const precisionTypes = [
+    'LOW_FLOAT',
+    'MEDIUM_FLOAT',
+    'HIGH_FLOAT',
+    'LOW_INT',
+    'MEDIUM_INT',
+    'HIGH_INT',
+  ];
+
+  const tbody = createTable(document.body, ['type', 'bits', 'precision', 'min', 'max', '']);
+  for (const shaderType of shaderTypes) {
+    const tr = addElem('tr', tbody);
+    addElem('td', tr, {
+      textContent: shaderType,
+      colSpan: 6,
+      className: 'shader-type',
+    });
+    for (const precisionType of precisionTypes) {
+      const tr = addElem('tr', tbody);
+      const format = gl.getShaderPrecisionFormat(gl[shaderType], gl[precisionType]);
+      const notSupported = format.min === 0;
+      const className = notSupported ? 'no-support' : '';
+      const isInt = format.precision === 0;
+      const bits = isInt
+         ? format.rangeMin + 1
+         : format.precision + Math.log2(format.rangeMin + 1) + 2;
+
+      addElem('td', tr, {
+        textContent: precisionType.toLowerCase().replace('_', 'p ')},
+      );
+      addElem('td', tr, {textContent: bits, className});
+      addElem('td', tr, {textContent: format.precision, className});
+      addElem('td', tr, {textContent: format.rangeMin, className});
+      addElem('td', tr, {textContent: format.rangeMax, className});
+      addElem('td', tr, {textContent: notSupported ? 'no supported' : '', className});
+    }
+  }
+}
+
+function addElem(tag, parent, attrs = {}) {
+  const elem = createElem(tag, attrs);
+  parent.appendChild(elem);
+  return elem;
+}
+
+function createTable(parent, headings) {
+  const table = addElem('table', parent);
+  const thead = addElem('thead', table);
+  headings.forEach(heading => addElem('th', thead, {textContent: heading}));
+  return addElem('tbody', table);
+}
+
+function createElem(tag, attrs = {}) {
+  const elem = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (typeof value === 'object') {
+      for (const [k, v] of Object.entries(value)) {
+        try {
+        elem[key][k] = v;
+        } catch (e) {
+          debugger;  // eslint-disable-line no-debugger
+        }
+      }
+    } else if (elem[key] === undefined) {
+      elem.setAttribute(key, value);
+    } else {
+      elem[key] = value;
+    }
+  }
+  return elem;
+}
+
+main();
+</script>
+</html>
