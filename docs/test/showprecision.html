@@ -18,8 +18,17 @@ function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
   const canvas = document.createElement("canvas");
+  const gl2 = canvas.getContext("webgl2");
+  const glsupp = document.createElement("p");
+  if (gl2) {
+    glsupp.setContent("WebGL 2.0 is supported.");
+  } else {
+    glsupp.setContent("WebGL 2.0 is NOT supported.");
+  }
+
   const gl = canvas.getContext("webgl");
   if (!gl) {
+    glsupp.setContent("WebGL is not supported. Aborting.")
     return;
   }
 
