@@ -1,6 +1,6 @@
 // This variant of the 2D "psrdnoise" function is compatible with the
 // 16-bit half-precision float type. Useful on platforms where
-// half-floats are faster, or where 32-bit floats are unavaialble.
+// half-floats are faster, or where 32-bit floats are unavailable.
 
 #ifdef GL_ES
 precision mediump float;
