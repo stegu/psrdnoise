@@ -6,6 +6,10 @@ to be working (yields the same results as the corresponding GLSL functions),
 but I have only done a minimal amount of testing. If you find bugs, please
 report them in the "Issues" section.
 
+A variant of 2-D noise which is compatible with "mediump" 16-bit float precision
+has been added to the repository. (A 3-D version is more tricky. No promises yet.)
+As with the WGSL port, bug reports and general feedback on the code is appreciated.
+
 A scientific article on this is published in Journal of Computer Graphics
 Techniques, [JCGT](http://jcgt.org/published/0011/01/02/).
 Code is in the src/ folder, and there are some live WebGL examples and
