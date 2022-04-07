@@ -16,6 +16,11 @@ Code is in the src/ folder, and there are some live WebGL examples and
 a tutorial on how to use these functions on
 [the accompanying Github Pages site](https://stegu.github.io/psrdnoise).
 
+The infamous troll-owned patent on Simplex Noise finally expired in January 2022,
+but none of these functions implement any of the patented methods. That patent
+was arguably never valid in the first place, because I would argue that its
+primary claim is demonstrably false. In any case, it's a moot point now.
+
 ## LICENSE
 
 The entire content of the docs/ folder is in the public domain, with the
