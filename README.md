@@ -16,6 +16,12 @@ Code is in the src/ folder, and there are some live WebGL examples and
 a tutorial on how to use these functions on
 [the accompanying Github Pages site](https://stegu.github.io/psrdnoise).
 
+Ports to HLSL are in the src/hlsl directory. These were made by @domportera,
+I am not fluent in HLSL myself.
+
+A Unity shader project using another HLSL port of these functions is available
+from @chmodseven: https://github.com/chmodseven/psrdnoise
+
 The infamous troll-owned patent on Simplex Noise finally expired in January 2022,
 but none of these functions implement any of the patented methods. That patent
 was arguably never valid in the first place, because I would argue that its
